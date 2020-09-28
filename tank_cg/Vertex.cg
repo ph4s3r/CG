@@ -1,0 +1,95 @@
+struct VS_Input {
+
+float4 in_position : POSITION;
+
+float4 in_color : COLOR;
+
+float3 normal    : NORMAL;
+
+};
+
+struct VS_Output {
+
+  float4 oPosition : POSITION;
+
+  float4 color    : COLOR;
+
+};
+
+VS_Output my_vertex_shader(VS_Input IN, 
+
+						  uniform float4x4 modelViewProj,
+
+						  uniform float3 globalAmbient,
+
+						  uniform float3 lightColor,
+
+						  uniform float3 lightPosition,
+
+						  uniform float3 eyePosition,
+
+						  uniform float3 Ke,
+
+						  uniform float3 Ka,
+
+						  uniform float3 Kd,
+
+						  uniform float3 Ks,
+
+						  uniform float  shininess)
+
+{
+
+  VS_Output OUT;
+
+  OUT.oPosition = mul(modelViewProj, IN.in_position);
+
+  float3 P = IN.in_position.xyz;
+
+  float3 N = IN.normal;
+
+
+
+  // Compute the emissive term
+
+  float3 emissive = Ke;
+
+
+
+  // Compute the ambient term
+
+  float3 ambient = Ka * globalAmbient;
+
+
+
+  // Compute the diffuse term
+
+  float3 L = normalize(lightPosition - P);
+
+  float diffuseLight = max(dot(N, L), 0);
+
+  float3 diffuse = Kd * lightColor * diffuseLight;
+
+
+
+  // Compute the specular term
+
+  float3 V = normalize(eyePosition - P);
+
+  float3 H = normalize(L + V);
+
+  float specularLight = pow(max(dot(N, H), 0),
+
+                            shininess);
+
+  if (diffuseLight <= 0) specularLight = 0;
+
+  float3 specular = Ks * lightColor * specularLight;
+
+  OUT.color.xyz = emissive + ambient + diffuse + specular;
+
+  OUT.color.w = 1;
+
+	return OUT;
+
+}

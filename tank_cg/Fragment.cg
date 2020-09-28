@@ -1,0 +1,27 @@
+struct PS_Input {
+
+  float4 color : COLOR;
+
+};
+
+struct PS_Output {
+
+  float4 color : COLOR;
+
+};
+
+PS_Output my_fragment_shader(PS_Input IN)
+
+{
+
+  PS_Output OUT;
+
+  OUT.color = IN.color;  // RGBA green
+  //OUT.color = float4(1.0, 0.0, 0.0, 1.0);
+
+  return OUT;
+
+}
+
+
+
